@@ -4,7 +4,17 @@ const path = require('path');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
+const {Pool} =require('pg')
+const con=new Pool({
+  host:'localhost',
+  user:'postgres',
+  port: 5432,
+  password: "15975321",
+  database: "library system"
+})
+con.connect().then(()=>{
+  console.log("Connected to pg")
+}) .catch(err => console.error('DB connection failed:', err.message));
 const app = express();
 const PORT = process.env.PORT || 8080;
 app.set('view engine', 'ejs');

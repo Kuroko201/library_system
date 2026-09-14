@@ -1,0 +1,11 @@
+body {
+    justify-content: center;
+    align-items: center;
+    display: flex;  
+     min-height: 100vh;
+     margin: 0; 
+}
+
+.form-group{
+    margin-bottom: 16px;
+}

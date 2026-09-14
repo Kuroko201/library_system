@@ -4,14 +4,22 @@
     <meta charset="UTF-8">
     <title>Library System - Login</title>
 </head>
+<link rel="stylesheet" href="/css/login.css">
 <body>
     <div>
-        <h2>🔑 Admin Login</h2>
+        <h2>Login</h2>
+        <div style="margin:20px">
         <form action="/login" method="POST">
-            <input type="text" name="username" placeholder="Username" required />
-            <input type="password" name="password" placeholder="Password" required />
+            <div class="form-group">
+                <label>Name: </label><br><input type="text" name="username" placeholder="Username" required >
+            </div>
+            <div class="form-group">
+                <label>Password: </label><br><input type="password" name="password" placeholder="Password" required >
+            </div>
             <button type="submit">Log In</button>
+        
         </form>
+        </div>
         <a href="/register">Don't have an account? Register here</a>
     </div>
 </body>
