@@ -1,15 +1,31 @@
 services:
+  # 1. 資料庫服務
   postgres-db:
     image: postgres:15-alpine
-    container_name: my_local_postgres
+    container_name: library_postgres
     environment:
-      POSTGRES_USER: my_user
-      POSTGRES_PASSWORD: my_password
-      POSTGRES_DB: my_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  # 2. 你的 Node.js 服務（鎖定與你電腦完全一致的 v22.17 版本）
+  library-web:
+    image: node:22.17-alpine # ◄── 這裡精準綁定你的核心版本！
+    container_name: library_node_app
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - ${PORT} 
+    command: sh -c "npm install && node index.js"
+    depends_on:
+      - postgres-db 
+    env_file:
+      - .env 
 
 volumes:
   pgdata:
