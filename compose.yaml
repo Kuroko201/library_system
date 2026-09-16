@@ -1,5 +1,5 @@
 services:
-  # 1. 資料庫服務
+
   postgres-db:
     image: postgres:15-alpine
     container_name: library_postgres
@@ -11,21 +11,40 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # 2. 你的 Node.js 服務（鎖定與你電腦完全一致的 v22.17 版本）
   library-web:
-    image: node:22.17-alpine # ◄── 這裡精準綁定你的核心版本！
+    image: node:22.17-alpine
     container_name: library_node_app
     working_dir: /app
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
-      - ${PORT} 
+      - "${PORT}:${PORT}"
     command: sh -c "npm install && node index.js"
     depends_on:
-      - postgres-db 
+      postgres-db:
+        condition: service_healthy
     env_file:
-      - .env 
+      - .env
+
+  migrate:
+    image: migrate/migrate:v4.17.1
+    volumes:
+      - ./migrations:/migrations
+    command: [
+      "-path=/migrations",
+      "-database", "postgres://${DB_USER}:${DB_PASSWORD}@postgres-db:5432/${DB_DATABASE}?sslmode=disable",
+      "up"
+    ]
+    depends_on:
+      postgres-db:
+        condition: service_healthy
 
 volumes:
   pgdata:
