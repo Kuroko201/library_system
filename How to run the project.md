@@ -22,8 +22,16 @@ docker compose run --rm migrate down 1
 | Docker Desktop | 容器 | `docker --version` |
 | Node.js 22 | 本機開發（可選） | `node --version` |
 
-## 初次啟動
+## 初次啟動 （Full Container Load Mode）
 git clone <repo-url>
 cd library_system
 cp .env.example .env
 docker compose up -d 
+
+## 初次啟動 （Hybrid Mode, i have this because i heard that docker desktop eat a lot of resources and my labtop sucks.）
+git clone <repo-url>
+cd library_system
+cp .env.example .env
+npm install
+docker compose up -d postgres-db
+npm run dev
