@@ -11,10 +11,10 @@
         <div style="margin:20px">
         <form action="/register" method="POST" id ="register-form">
             <div class="form-group">
-                <label>Name: </label><br><input type="text" name="username" placeholder="Username" id="username" required >
+                <label>Name: </label><br><input type="text" name="username" placeholder="Username" id="username" maxlength="30" required >
             </div>
             <div class="form-group">
-                <label>Password: </label><br><input type="password" name="password" placeholder="Password" id="password" required >
+                <label>Password: </label><br><input type="password" name="password" placeholder="Password" id="password" maxlength="30" required >
             </div>
             <button type="submit">Register</button>
         
@@ -59,7 +59,7 @@ form.addEventListener('submit', function (e) {
     alert('Password must be 4–30 characters');
     return;
   }
-  
+
 });
 
 </script>
