@@ -28,7 +28,7 @@ cd library_system
 cp .env.example .env
 docker compose up -d 
 
-## 初次啟動 （Hybrid Mode, i have this because i heard that docker desktop eat a lot of resources and my labtop sucks.）
+## 初次啟動 （Hybrid Mode, i have this because i heard that docker desktop eat a lot of resources and my labtop sucks.） (also, if bugged, you can see it from your terminal not open docker to see it)
 git clone <repo-url>
 cd library_system
 cp .env.example .env
