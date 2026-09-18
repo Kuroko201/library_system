@@ -44,11 +44,18 @@ app.post('/register',async (req,res)=>{
   if (typeof username !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ error: 'Invalid input types' });
   }
-  if (username.trim().length < 3 || username.length > 30) {
+if (/\s/.test(username)) {
+    return res.status(400).json({ error: 'Username must not contain whitespace' });
+  }
+  if (/\s/.test(password)) {
+    return res.status(400).json({ error: 'Password must not contain whitespace' });
+  }
+
+  if (username.length < 3 || username.length > 30) {
     return res.status(400).json({ error: 'Username must be 3–30 characters' });
   }
-  if (password.length < 4) {
-    return res.status(400).json({ error: `Password must be at least 4 characters` });
+  if (password.length < 4 || password.length > 30) {
+    return res.status(400).json({ error: 'Password must be 4–30 characters' });
   }
 
   try {
@@ -57,7 +64,7 @@ app.post('/register',async (req,res)=>{
     const result = await pool.query(
       `INSERT INTO users (name, password)
        VALUES ($1, $2)`,
-      [username.trim(), passwordHash]
+      [username, passwordHash]
     );
 
   return res.status(201).json({ message: 'User registered' });
