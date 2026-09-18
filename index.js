@@ -31,6 +31,52 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
+app.post('/login',async(req,res)=>{
+ const {username,password} = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+  if (typeof username !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Invalid input types' });
+  }
+if (/\s/.test(username)) {
+    return res.status(400).json({ error: 'Username must not contain whitespace' });
+  }
+  if (/\s/.test(password)) {
+    return res.status(400).json({ error: 'Password must not contain whitespace' });
+  }
+
+  if (username.length < 3 || username.length > 30) {
+    return res.status(400).json({ error: 'Username must be 3–30 characters' });
+  }
+  if (password.length < 4 || password.length > 30) {
+    return res.status(400).json({ error: 'Password must be 4–30 characters' });
+  }
+
+  try{
+    const result = await pool.query(
+      'SELECT id, name, password FROM users WHERE name = $1',
+      [username]
+    );
+
+    const userinfo = result.row[0];
+
+      if (!user) {
+      await bcrypt.compare(password, '$2b$10$abcdefghijklmnopqrstuu');
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    
+  }catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+})
 app.get('/register', (req, res) => {
   res.render('register');
 });
@@ -38,7 +84,7 @@ app.get('/register', (req, res) => {
 app.post('/register',async (req,res)=>{
   const { username, password } = req.body;
 
-    if (!username || !password) {
+  if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }
   if (typeof username !== 'string' || typeof password !== 'string') {
@@ -69,7 +115,6 @@ if (/\s/.test(username)) {
 
   return res.status(201).json({ message: 'User registered' });
   } catch (err) {
-    // Unique violation (username already taken)
     if (err.code === '23505') {
       return res.status(409).json({ error: 'Username already taken' });
     }
