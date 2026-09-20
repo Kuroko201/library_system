@@ -18,6 +18,9 @@ docker compose run --rm migrate
 # 回滚一个版本
 docker compose run --rm migrate down 1
 
+# Restart container
+docker compose restart library-web
+
 # 完整啟動流程
 | Docker Desktop | 容器 | `docker --version` |
 | Node.js 22 | 本機開發（可選） | `node --version` |
@@ -28,7 +31,7 @@ cd library_system
 cp .env.example .env
 docker compose up -d 
 
-## 初次啟動 （Hybrid Mode, i have this because i heard that docker desktop eat a lot of resources and my labtop sucks.） (also, if bugged, you can see it from your terminal not open docker to see it)
+## 初次啟動 （Hybrid Mode, i have this because i heard that docker desktop eat a lot of resources and my labtop sucks.） (also, if bugged, you can see it from your terminal not open docker to see it) and And you did not need to restart the container everytime
 git clone <repo-url>
 cd library_system
 cp .env.example .env

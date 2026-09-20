@@ -3,7 +3,8 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const dotenv = require('dotenv');
+dotenv.config();
 const {Pool} =require('pg')
 const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 12;
@@ -55,28 +56,38 @@ if (/\s/.test(username)) {
 
   try{
     const result = await pool.query(
-      'SELECT id, name, password FROM users WHERE name = $1',
+      'SELECT id, name, password, role FROM users WHERE name = $1',
       [username]
     );
 
-    const userinfo = result.row[0];
+    const userinfo = result.rows[0];
 
-      if (!user) {
+    if (!userinfo) {
       await bcrypt.compare(password, '$2b$10$abcdefghijklmnopqrstuu');
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, userinfo.password);
     if (!match) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
+    const token = jwt.sign(
+    { id: userinfo.id, name: userinfo.name, role: userinfo.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '1h' } // 設定 Token 有效期（例如：1 小時）
+  );
+
+   res.redirect('/library_system');
     
   }catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
+
 })
+
+
 app.get('/register', (req, res) => {
   res.render('register');
 });
@@ -124,6 +135,13 @@ if (/\s/.test(username)) {
 
 })
 
+app.get('/library_system',(req,res)=>{
+  res.render('library_system');
+})
+
+app.post('/library_system',(req,res)=>{
+
+})
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

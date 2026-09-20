@@ -26,6 +26,8 @@ services:
       - /app/node_modules
     ports:
       - "${PORT}:${PORT}"
+    environment:
+      - DB_HOST=postgres-db
     command: sh -c "npm install && npx nodemon index.js"
     depends_on:
       postgres-db:
