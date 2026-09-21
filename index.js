@@ -4,6 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser'); 
 dotenv.config();
 const {Pool} =require('pg')
 const bcrypt = require('bcrypt');
@@ -15,6 +16,8 @@ const pool=new Pool({
   password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT || '5432', 10), 
 })
+const requireAuth = require('./middleware/login_validation'); 
+
 pool.connect().then(()=>{
   console.log("Connected to pg")
 }) .catch(err => console.error('DB connection failed:', err.message));
@@ -26,7 +29,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(cookieParser()); 
 
 app.get('/login', (req, res) => {
   res.render('login');
@@ -77,6 +80,13 @@ if (/\s/.test(username)) {
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '1h' } // 設定 Token 有效期（例如：1 小時）
   );
+
+    res.cookie('token', token, {
+    httpOnly: true,                            
+    sameSite: 'lax',                         
+    maxAge: 60 * 60 * 1000, 
+
+  });
 
    res.redirect('/library_system');
     
@@ -135,8 +145,9 @@ if (/\s/.test(username)) {
 
 })
 
-app.get('/library_system',(req,res)=>{
-  res.render('library_system');
+app.get('/library_system',requireAuth,(req,res)=>{
+   console.log('req.user =', req.user); 
+  res.render('library_system', { user: req.user });
 })
 
 app.post('/library_system',(req,res)=>{
