@@ -88,8 +88,15 @@ if (/\s/.test(username)) {
 
   });
 
-   res.redirect('/library_system');
-    
+    res.cookie('token', token, {
+    httpOnly: true,                            
+    sameSite: 'lax',                         
+    maxAge: 60 * 60 * 1000, 
+
+  });
+
+    return res.redirect('/library_system');
+
   }catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Internal server error' });
