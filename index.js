@@ -29,7 +29,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser()); 
+app.use(cookieParser());
+
+
+const authRouter = express.Router();
+authRouter.use(requireAuth);
+app.use('/library_system', authRouter);
+
 
 app.get('/login', (req, res) => {
   res.render('login');
@@ -80,13 +86,6 @@ if (/\s/.test(username)) {
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '1h' } // 設定 Token 有效期（例如：1 小時）
   );
-
-    res.cookie('token', token, {
-    httpOnly: true,                            
-    sameSite: 'lax',                         
-    maxAge: 60 * 60 * 1000, 
-
-  });
 
     res.cookie('token', token, {
     httpOnly: true,                            
@@ -152,14 +151,15 @@ if (/\s/.test(username)) {
 
 })
 
-app.get('/library_system',requireAuth,(req,res)=>{
+authRouter.get('/',(req,res)=>{
    console.log('req.user =', req.user); 
   res.render('library_system', { user: req.user });
 })
 
-app.post('/library_system',(req,res)=>{
+authRouter.post('/',(req,res)=>{
 
 })
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
